@@ -1,0 +1,28 @@
+BEGIN
+
+	DECLARE P1 VARCHAR(254);
+	DECLARE P2 INT DEFAULT 0;
+
+	SELECT CAMPO INTO P1 FROM tabla WHERE ID=NEW.CAMPO;
+
+	IF( (SELECT COUNT(*) FROM tabla WHERE ID=P1 AND ID2=NEW.CAMPO) = 0 ) THEN
+	  
+		SELECT ( COUNT(*)+1 ) INTO P2 FROM tabla WHERE ID=P1;
+
+		cursor_loop:loop
+
+			IF( (SELECT COUNT(*) FROM tabla WHERE ID=CONCAT(‘Nombre’,P2) AND ID=P1) = 0 ) THEN
+
+				INSERT INTO tabla VALUES (CAMPO,CAMPO,CONCAT(‘Usuario ‘,P2),UNIX_TIMESTAMP(NOW()));
+
+				leave cursor_loop;
+
+			END IF;
+
+			SET P2 = P2+1;
+
+		END loop cursor_loop;
+
+	END IF;
+
+END 
